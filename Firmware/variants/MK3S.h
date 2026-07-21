@@ -17,7 +17,7 @@
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S GB3DPE"
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
@@ -41,7 +41,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,4000} // !!!CHANGED: tweaking e steps
 
 // Endstop inverting
 #define X_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
@@ -60,11 +60,11 @@
 #define MANUAL_Z_HOME_POS 0.2
 
 // Travel limits after homing
-#define X_MAX_POS 255
+#define X_MAX_POS 209 // !!!CHANGED: 255 to 209 for GB3DPE
 #define X_MIN_POS 0
 #define Y_MAX_POS 212.5
 #define Y_MIN_POS -4 //orig -4
-#define Z_MAX_POS 210
+#define Z_MAX_POS 207 // !!!CHANGED: 210 to 207 for GB3DPE
 #define Z_MIN_POS 0.15
 
 // Z height correction value
@@ -93,8 +93,8 @@
  */
 #define SHEET_PRINT_ZERO_REF_Y -2.f
 
-#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 120}      // (mm/sec)   max feedrate (M203)
-#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 120}      // (mm/sec)   max feedrate (M203), silent mode
+#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 600}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E from 120 to 600 for GB3DPE
+#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 600}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E from 120 to 600 for GB3DPE
 
 #define DEFAULT_MAX_ACCELERATION            {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 #define DEFAULT_MAX_ACCELERATION_SILENT     {960, 960, 200, 5000}    // (mm/sec^2) max acceleration (M201), silent mode
@@ -104,7 +104,7 @@
 #define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts (M204R)
 #define DEFAULT_TRAVEL_ACCELERATION   1250   // X, Y, Z and E max acceleration in mm/s^2 for travels (M204T)
 
-#define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
+#define MANUAL_FEEDRATE {2700, 2700, 1000, 400}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E from 100 to 400 for GB3DPE
 
 //Silent mode limits
 #define SILENT_MAX_ACCEL_XY      960ul  // max acceleration in silent mode in mm/s^2
@@ -221,7 +221,7 @@
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
+#define TMC2130_USTEPS_E    4        // microstep resolution for E axis ; !!!CHANGED: 32 to 4 for GB3DPE
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
@@ -285,7 +285,7 @@
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {16, 20, 35, 30}  // default holding currents for all axes
 #define TMC2130_CURRENTS_FARM 36             // E 805 mA peak for ECool/farm mode
-#define TMC2130_CURRENTS_R {16, 20, 35, 30}  // default running currents for all axes
+#define TMC2130_CURRENTS_R {16, 20, 35, 40}  // default running currents for all axes ; !!!CHANGED: E from 30 to 40 for GB3DPE
 #define TMC2130_CURRENTS_R_HOME {8, 10, 20, 18}  // homing running currents for all axes
 
 #define TMC2130_STEALTH_Z
@@ -406,8 +406,8 @@
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 // model-based temperature check
-#define THERMAL_MODEL 1              // enable model-based temperature checks
-#define THERMAL_MODEL_DEBUG 1        // extended runtime logging
+//#define THERMAL_MODEL 1              // enable model-based temperature checks ; !!!CHANGED: comment to disable thermal model for GB3DPE
+//#define THERMAL_MODEL_DEBUG 1        // extended runtime logging ; !!!CHANGED: comment to disable thermal model debug for GB3DPE
 
 #define THERMAL_MODEL_CAL_C_low 5    // C estimation lower limit
 #define THERMAL_MODEL_CAL_C_high 20  // C estimation upper limit
@@ -431,7 +431,7 @@
  HOST FEATURES
  *------------------------------------*/
 
-// Uncomment if the host supports '//action:shutdown'. It will add "Shutdown host" to the LCD meun. 
+// Uncomment if the host supports '//action:shutdown'. It will add "Shutdown host" to the LCD meun.
 //#define HOST_SHUTDOWN
 
 // Uncomment if the host doesn't support '//action:ready' & '//action:notready'.
@@ -469,8 +469,8 @@
 #define MESH_HOME_Z_CALIB 0.2
 #define MESH_HOME_Z_SEARCH 5.0f           // Z lift for homing, mesh bed leveling etc.
 
-#define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
-#define Y_PROBE_OFFSET_FROM_EXTRUDER 5     // Z probe to nozzle Y offset: -front +behind
+#define X_PROBE_OFFSET_FROM_EXTRUDER -32     // Z probe to nozzle X offset: -left  +right  !!!CHANGED: 23 to -32 for GB3DPE
+#define Y_PROBE_OFFSET_FROM_EXTRUDER -39     // Z probe to nozzle Y offset: -front +behind !!!CHANGED: 5 to -39 for GB3DPE
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 

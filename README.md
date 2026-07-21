@@ -1,5 +1,8 @@
 # Prusa Firmware MK3
 
+> This is a fork of the original Prusa-Firmware repository to support the GreenBoy3D pellet extruder we bought and installed on our Prusa MK3S but for some reason provides no guide or firmware support...great! We are not affiliated with Prusa Research in any way, nor GreenBoy3D. Our setup uses a modified PINDA bracket since the design given by GB3D literally would not work since it fits outside both the X and Y axis limits of the printer; we relocated to approximately where the original PINDA was located. The CAD for that can be found here <placeholder for now (TODO)>.
+> Both MK3.h and MK3S.h have been modified to support the GB3DPE extruder, including changing the probe offsets and tweaking the e-steps. The firmware has been tested and works well with our setup, but we make no guarantees that it will work for you. Use at your own risk. All changes are marked as `!!!CHANGED:` in the code or use git to diff the files against the original Prusa-Firmware repository.
+
 This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3/MK2.5S/MK2.5 line of printers.
 
 The latest official builds can be downloaded from [Prusa Drivers](https://www.prusa3d.com/drivers/). Pre-built development releases are also [available here](https://github.com/prusa3d/Prusa-Firmware/releases).
