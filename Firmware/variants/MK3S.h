@@ -607,7 +607,7 @@
 #elif defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define TEMP_SENSOR_0 148
 #else
-#define TEMP_SENSOR_0 5
+#define TEMP_SENSOR_0 11 // !!!CHANGED: 5 to 11 (100k NTC B3950) for GB3DPE stock thermistor; verify vs reference thermometer
 #endif
 #if defined(E3D_PT100_BED_WITH_AMP)
 #define TEMP_SENSOR_BED 247
