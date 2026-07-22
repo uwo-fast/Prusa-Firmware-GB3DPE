@@ -15,59 +15,98 @@
 - Board is the stock **Einsy (atmega2560, 8-bit AVR)** → hard step-rate ceiling
   (~40 k steps/s/axis; DEDGE stepping ~2× that). This bounds extrusion flow.
 
-## Extrusion (E axis) — the core relationship
+## Extrusion (E axis) — the math
 
-The slicer emits E distances assuming **1.75 mm filament**, so it expects:
+The slicer emits E distances as if extruding **1.75 mm filament**, so one E-mm
+must deliver the volume of a 1 mm length of that filament:
 
-```
-volume per E-mm = pi * (1.75/2)^2 = 2.405 mm^3 / E-mm
-```
+$$
+A = \pi\left(\frac{d_\text{fil}}{2}\right)^{2}
+  = \pi\left(\frac{1.75}{2}\right)^{2}
+  \approx 2.405\ \text{mm}^3\ \text{per E-mm}
+$$
 
-`DEFAULT_AXIS_STEPS_PER_UNIT[E]` maps that E-mm to auger rotation:
+Steps/mm map commanded E-mm to auger rotation, where $s$ = steps/mm,
+$\mu$ = microstep, $200$ = full-steps/rev of a $1.8^\circ$ motor, and $G$ = gearbox ratio:
 
-```
-motor_rev / E-mm = steps_per_mm / (200 * microstep)
-auger_rev / E-mm = (motor_rev / E-mm) / gear_ratio        # gear_ratio unknown
-```
+$$
+\frac{\text{motor rev}}{\text{E-mm}} = \frac{s}{200\,\mu}
+\qquad\qquad
+\frac{\text{auger rev}}{\text{E-mm}} = \frac{s}{200\,\mu\,G}
+$$
 
-AVR step-rate ceiling sets the max flow:
+$G$ is unpublished, but the volumetric calibration below cancels it out entirely.
 
-```
-max E speed (mm/s) = ~40000 / steps_per_mm          # x2 with DEDGE
-max flow (mm^3/s)  = max E speed * 2.405
-```
+The AVR step-rate ceiling ($f_\text{max}\approx 40{,}000$ steps/s; DEDGE stepping
+roughly doubles it) bounds feedrate and volumetric flow:
 
-**Microstepping lever:** for the same auger rotation, µ1 uses 1/4 the steps/mm
-of µ4 -> 1/4 the step rate. Lower µsteps = more AVR headroom for a geared auger.
-(TMC2130 `INTPOL_E` interpolates to 256 internally, so motion stays smooth.)
+$$
+v_{E,\max} = \frac{f_\text{max}}{s}
+\qquad\qquad
+\dot{V}_{\max} = A\,v_{E,\max} = \frac{A\,f_\text{max}}{s}
+$$
 
-## Calibration procedure
+So **lower $s$ gives more speed/flow headroom.** A low calibrated $s$ (see below)
+means stock $\mu 32$ is fine and no low-microstepping trick is needed.
 
-**Volumetric (gold standard, needs pellets):**
-1. Heat to temp, prime until steady flow.
-2. Command a known extrusion (e.g. `G1 E100 F<safe>`), catch the output.
-3. Weigh it -> `measured_mass` (g).
-4. `expected_mass = 100 * 2.405 * rho`  (PLA rho ~= 0.00124 g/mm^3 -> ~0.298 g)
-5. `new_steps = old_steps * (expected_mass / measured_mass)`; repeat until ~1:1.
+## Calibration (volumetric — gold standard)
 
-**Dry (rotational, no pellets):** mark the auger/coupling, command a known E
-move, count revolutions -> gives current `auger_rev / E-mm`. Useful for relative
-comparison and rate feel; absolute volume still needs the pellet test above.
+For a positive-displacement auger, output volume $\propto$ commanded steps, so
+for a fixed test distance $L$ the extruded mass is proportional to $s$. Extrude a
+known $L$, weigh the result $m_\text{meas}$, and compare to the target mass:
+
+$$
+m_\text{exp} = L\,A\,\rho,
+\qquad \rho_\text{PLA} \approx 1.24\times10^{-3}\ \text{g/mm}^3
+$$
+
+$$
+\boxed{\; s_\text{new} = s_\text{old}\,\dfrac{m_\text{exp}}{m_\text{meas}} \;}
+$$
+
+Repeat until $m_\text{meas}\approx m_\text{exp}$, then fine-tune with the slicer
+extrusion multiplier from measured wall widths.
+
+**Worked calibration (2026-07-22), $s_\text{old}=8000$, $L=50$:**
+
+$$
+m_\text{exp} = 50 \times 2.405 \times 1.24\times10^{-3} \approx 0.1491\ \text{g},
+\qquad m_\text{meas} \approx 1.005\ \text{g}
+$$
+
+$$
+s_\text{new} = 8000 \times \frac{0.1491}{1.005} \approx 1187\ \text{steps/mm}
+$$
+
+**Consistency check:** the earlier stock value $s = 280$ predicts
+
+$$
+m = 1.005 \times \frac{280}{8000} \approx 0.035\ \text{g} \approx \tfrac{1}{4}\,m_\text{exp},
+$$
+
+matching the observed "about a quarter" under-extrusion. And at
+$s\approx 1187,\ \mu = 32$: $\;v_{E,\max} \approx 40000/1187 \approx 34$ mm/s,
+$\;\dot{V}_{\max} \approx 81$ mm³/s — no AVR bottleneck, so stock $\mu 32$ stands.
+
+**Dry (rotational) fallback:** mark the auger/coupling, command a known E move,
+count revolutions $\to$ current $\text{auger rev}/\text{E-mm}$. Good for rate/feel;
+absolute volume still needs the weigh test.
 
 ## Key config levers (Firmware/variants/MK3S.h and MK3.h)
 
-| Macro | Purpose | Current |
-|---|---|---|
-| `DEFAULT_AXIS_STEPS_PER_UNIT[E]` | E-mm -> steps (delivery) | 4000 |
-| `TMC2130_USTEPS_E` | E microstepping | 4 |
-| `DEFAULT_MAX_FEEDRATE[E]` / `_SILENT` | E speed ceiling (M203) | 600 |
-| `MANUAL_FEEDRATE[E]` | LCD/manual extrude speed | 400 mm/min |
-| `TMC2130_CURRENTS_R[E]` | E run current | 40 |
-| `EXTRUDE_MINTEMP` | cold-extrude lockout | 175 |
+| Macro                                 | Purpose                  | Current    |
+| ------------------------------------- | ------------------------ | ---------- |
+| `DEFAULT_AXIS_STEPS_PER_UNIT[E]`      | E-mm -> steps (delivery) | 4000       |
+| `TMC2130_USTEPS_E`                    | E microstepping          | 4          |
+| `DEFAULT_MAX_FEEDRATE[E]` / `_SILENT` | E speed ceiling (M203)   | 600        |
+| `MANUAL_FEEDRATE[E]`                  | LCD/manual extrude speed | 400 mm/min |
+| `TMC2130_CURRENTS_R[E]`               | E run current            | 40         |
+| `EXTRUDE_MINTEMP`                     | cold-extrude lockout     | 175        |
 
 ## Priming / first layer (operational)
 
 Pellet extruders need priming before any cal/print:
+
 1. Fill hopper; confirm pellets actually feed (no bridging).
 2. Heat to temp and **soak** a few min — barrel thermal mass >> a filament
    hotend; the whole barrel must reach temp to melt through.
@@ -105,6 +144,7 @@ our E changes had ever applied. (Compile-time items DID apply: probe offsets,
 travel limits, thermistor table, FANCHECK/FSENSOR/THERMAL_MODEL, `MANUAL_FEEDRATE`.)
 
 **Tune E live instead of reflashing:**
+
 ```gcode
 M350 E1        ; E microstepping (M503 field: M350 ... E__)
 M92 E8000      ; E steps/mm
@@ -112,6 +152,7 @@ M203 E5        ; E max feedrate (mm/s)
 M500           ; save to EEPROM
 M503           ; verify E shows 1 / 8000 / 5
 ```
+
 Sweep `M92 E<n>` + `M500` to dial in - no reflash per step. If `M350` won't
 stick, factory-reset loads all the `#define`s at once (then re-send D10, redo
 Live-Z/mesh). Keep the `#define`s updated to the final numbers for reproducible
@@ -120,11 +161,13 @@ fresh flashes, but remember: **on this printer, EEPROM is what's live.**
 ## Iteration log
 
 ### Iter 0 — baseline (as-flashed)
+
 - Config: E steps 4000, µstep 4 (= 5.0 motor-rev/E-mm), Emax 600, Imanual 400.
 - Observation (dry, no polymer): auger turns **too slow and delivers too little**
   vs expectation. Consistent with steps/mm ~8x low vs slush0's same-extruder value.
 
 ### Iter 1 — raise delivery + drop microstepping (APPLIED, pending test)
+
 - Change: `TMC2130_USTEPS_E` 4->1; E steps 4000->8000 (= 40 motor-rev/E-mm,
   ~8x delivery, matches slush0 same-hardware start); cap `DEFAULT_MAX_FEEDRATE[E]`
   and `_SILENT` 600->5 mm/s and `MANUAL_FEEDRATE[E]` 400->250 mm/min
@@ -139,6 +182,7 @@ fresh flashes, but remember: **on this printer, EEPROM is what's live.**
   ceiling is the wall -> a 32-bit control board is the real fix, not more steps/mm.
 
 ### Iter 2 — raise delivery ~4x (APPLIED, pending test)
+
 - Prior result (iter1 @ 8000): direction OK (CCW), melt OK at 225 C, manual
   strand clean — but first-layer prints ~1/4 the needed volume (thin/dotting).
   Head speed fine, so it's pure volume-per-E-mm under-delivery, not rate/temp.
@@ -152,6 +196,7 @@ fresh flashes, but remember: **on this printer, EEPROM is what's live.**
   section above.
 
 ### Iter 3 — actually apply the config, live via M-codes
+
 - Root cause: EEPROM overrode all E `#define`s (see EEPROM section). Reverted the
   `#define` back to 8000 @ ustep1 (the 32000 was an artifact of the bogus
   stock-ratio reading) and switched to live tuning.
