@@ -94,6 +94,29 @@ Starting point for the **0.4 mm** nozzle; refine as we calibrate.
 - **Extrusion multiplier** ~1.0 after e-steps cal; trim from measured wall width.
 - First layer: ~0.20 mm and slow for adhesion.
 
+## !! EEPROM overrides the firmware defaults (critical workflow)
+
+Prusa stores motion settings in **EEPROM**, and **EEPROM wins over the
+`#define`s on boot**. Reflashing new `DEFAULT_AXIS_STEPS_PER_UNIT`,
+`TMC2130_USTEPS_E`, `DEFAULT_MAX_FEEDRATE`, etc. does **NOT** change the live
+value unless you factory-reset. Discovered 2026-07-22 via `M503`: after flashing
+iters 1-2, live E was still **stock 280 steps/mm, ustep 32, 120 mm/s** - none of
+our E changes had ever applied. (Compile-time items DID apply: probe offsets,
+travel limits, thermistor table, FANCHECK/FSENSOR/THERMAL_MODEL, `MANUAL_FEEDRATE`.)
+
+**Tune E live instead of reflashing:**
+```gcode
+M350 E1        ; E microstepping (M503 field: M350 ... E__)
+M92 E8000      ; E steps/mm
+M203 E5        ; E max feedrate (mm/s)
+M500           ; save to EEPROM
+M503           ; verify E shows 1 / 8000 / 5
+```
+Sweep `M92 E<n>` + `M500` to dial in - no reflash per step. If `M350` won't
+stick, factory-reset loads all the `#define`s at once (then re-send D10, redo
+Live-Z/mesh). Keep the `#define`s updated to the final numbers for reproducible
+fresh flashes, but remember: **on this printer, EEPROM is what's live.**
+
 ## Iteration log
 
 ### Iter 0 — baseline (as-flashed)
@@ -123,9 +146,22 @@ Starting point for the **0.4 mm** nozzle; refine as we calibrate.
   can't drop microstepping, so all via steps/mm). Feedrate caps dropped to keep
   step rate AVR-safe: `DEFAULT_MAX_FEEDRATE[E]`/`_SILENT` 5->1.5 mm/s,
   `MANUAL_FEEDRATE[E]` 250->75 mm/min. Max flow now ~3.6 mm^3/s (fine for 0.4).
-- Result: _pending test before EOD_ (watch line fill; missed-step beeps at prime).
-- Next: **volumetric mass calibration tomorrow** (scale on hand):
-  `G1 E100 F60`, weigh, `new_steps = 32000 * (0.298 / measured_g)`. Also send
-  `M900 K0` before the built-in first-layer cal (LA off for the auger).
+- Result: **INVALID - never applied.** `M503` revealed live E was stock
+  280 steps/mm / ustep 32 (EEPROM override). Iters 0-2 all ran the stock
+  filament ratio, so those extrusion observations don't count. See the EEPROM
+  section above.
 
-<!-- Add Iter 3, 4, ... below as we measure. Keep: Change / Rationale / Result / Next -->
+### Iter 3 — actually apply the config, live via M-codes
+- Root cause: EEPROM overrode all E `#define`s (see EEPROM section). Reverted the
+  `#define` back to 8000 @ ustep1 (the 32000 was an artifact of the bogus
+  stock-ratio reading) and switched to live tuning.
+- Apply live: `M350 E1` / `M92 E8000` / `M203 E5` / `M500`; verify with `M503`.
+- Rationale: 8000 @ ustep1 = slush0's value for the same extruder - the only
+  valid reference we have (our own prior readings were at the stock ratio).
+- Result: _pending - first real E config on the auger._
+- Next: sweep `M92` live to dial in; volumetric mass cal with scale:
+  `G1 E100 F60`, weigh, `new_steps = 8000 * (0.298 / measured_g)`, `M500`. Send
+  `M900 K0` before the built-in first-layer cal (LA off for the auger). Once
+  settled, update the `#define` to match.
+
+<!-- Add Iter 4, 5, ... below as we measure. Keep: Change / Rationale / Result / Next -->

@@ -39,7 +39,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,32000} // !!!CHANGED: E steps for GB3DPE auger (iter2: 8000->32000, ~4x from eyeball 1/4 under; calibrate w/ scale)
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,8000} // !!!CHANGED: GB3DPE auger E steps. DEFAULT ONLY - live value is EEPROM (M92); reflash won't change it w/o factory reset. ~8000 = slush0 same-hw start; calibrate w/ scale
 
 // Endstop inverting
 #define X_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
@@ -91,8 +91,8 @@
  */
 #define SHEET_PRINT_ZERO_REF_Y -2.f
 
-#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 1.5}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E for GB3DPE (iter2: 5->1.5, AVR-safe at 32000 steps/mm)
-#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 1.5}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E for GB3DPE (iter2: 5->1.5, AVR-safe at 32000 steps/mm)
+#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 5}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E for GB3DPE (AVR-safe at 8000 steps/mm; EEPROM-driven live via M203)
+#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 5}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E for GB3DPE (AVR-safe at 8000 steps/mm; EEPROM-driven live via M203)
 
 #define DEFAULT_MAX_ACCELERATION            {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 #define DEFAULT_MAX_ACCELERATION_SILENT     {960, 960, 200, 5000}    // (mm/sec^2) max acceleration (M201), silent mode
@@ -102,7 +102,7 @@
 #define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts (M204R)
 #define DEFAULT_TRAVEL_ACCELERATION   1250   // X, Y, Z and E max acceleration in mm/s^2 for travels (M204T)
 
-#define MANUAL_FEEDRATE {2700, 2700, 1000, 75}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E for GB3DPE (iter2: 250->75, AVR-safe at 32000 steps/mm)
+#define MANUAL_FEEDRATE {2700, 2700, 1000, 250}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E for GB3DPE (AVR-safe at 8000 steps/mm; compile-time, not EEPROM)
 
 //Silent mode limits
 #define SILENT_MAX_ACCEL_XY      960ul  // max acceleration in silent mode in mm/s^2
