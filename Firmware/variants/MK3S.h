@@ -60,7 +60,7 @@
 #define MANUAL_Z_HOME_POS 0.2
 
 // Travel limits after homing
-#define X_MAX_POS 209 // !!!CHANGED: 255 to 209 for GB3DPE
+#define X_MAX_POS 210 // !!!CHANGED: 255 to 210 for GB3DPE (measured max X travel)
 #define X_MIN_POS 0
 #define Y_MAX_POS 212.5
 #define Y_MIN_POS -4 //orig -4
