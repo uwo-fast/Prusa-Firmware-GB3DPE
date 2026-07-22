@@ -115,4 +115,17 @@ Starting point for the **0.4 mm** nozzle; refine as we calibrate.
 - Note: if high-throughput flow (>~12 mm^3/s) is ever needed, the AVR step-rate
   ceiling is the wall -> a 32-bit control board is the real fix, not more steps/mm.
 
-<!-- Add Iter 2, 3, ... below as we measure. Keep: Change / Rationale / Result / Next -->
+### Iter 2 — raise delivery ~4x (APPLIED, pending test)
+- Prior result (iter1 @ 8000): direction OK (CCW), melt OK at 225 C, manual
+  strand clean — but first-layer prints ~1/4 the needed volume (thin/dotting).
+  Head speed fine, so it's pure volume-per-E-mm under-delivery, not rate/temp.
+- Change: E steps 8000->32000 (~4x, eyeball from "quarter" under; at ustep1
+  can't drop microstepping, so all via steps/mm). Feedrate caps dropped to keep
+  step rate AVR-safe: `DEFAULT_MAX_FEEDRATE[E]`/`_SILENT` 5->1.5 mm/s,
+  `MANUAL_FEEDRATE[E]` 250->75 mm/min. Max flow now ~3.6 mm^3/s (fine for 0.4).
+- Result: _pending test before EOD_ (watch line fill; missed-step beeps at prime).
+- Next: **volumetric mass calibration tomorrow** (scale on hand):
+  `G1 E100 F60`, weigh, `new_steps = 32000 * (0.298 / measured_g)`. Also send
+  `M900 K0` before the built-in first-layer cal (LA off for the auger).
+
+<!-- Add Iter 3, 4, ... below as we measure. Keep: Change / Rationale / Result / Next -->
