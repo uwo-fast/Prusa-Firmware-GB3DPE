@@ -39,7 +39,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,4000} // !!!CHANGED: tweaking e steps
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,8000} // !!!CHANGED: E steps for GB3DPE auger (iter1: 4000->8000 @ ustep1); calibrate volumetrically
 
 // Endstop inverting
 #define X_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
@@ -91,8 +91,8 @@
  */
 #define SHEET_PRINT_ZERO_REF_Y -2.f
 
-#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 600}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E from 120 to 600 for GB3DPE
-#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 600}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E from 120 to 600 for GB3DPE
+#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 5}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E for GB3DPE (iter1: 600->5, AVR-safe at 8000 steps/mm)
+#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 5}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E for GB3DPE (iter1: 600->5, AVR-safe at 8000 steps/mm)
 
 #define DEFAULT_MAX_ACCELERATION            {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 #define DEFAULT_MAX_ACCELERATION_SILENT     {960, 960, 200, 5000}    // (mm/sec^2) max acceleration (M201), silent mode
@@ -102,7 +102,7 @@
 #define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts (M204R)
 #define DEFAULT_TRAVEL_ACCELERATION   1250   // X, Y, Z and E max acceleration in mm/s^2 for travels (M204T)
 
-#define MANUAL_FEEDRATE {2700, 2700, 1000, 400}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E from 100 to 400 for GB3DPE
+#define MANUAL_FEEDRATE {2700, 2700, 1000, 250}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E for GB3DPE (iter1: 400->250, AVR-safe)
 
 //Silent mode limits
 #define SILENT_MAX_ACCEL_XY      960ul  // max acceleration in silent mode in mm/s^2
@@ -219,7 +219,7 @@
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    4        // microstep resolution for E axis ; !!!CHANGED: 32 to 4 for GB3DPE
+#define TMC2130_USTEPS_E    1        // microstep resolution for E axis ; !!!CHANGED: 32 to 1 for GB3DPE (iter1: ustep 4->1 for AVR step-rate headroom)
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis

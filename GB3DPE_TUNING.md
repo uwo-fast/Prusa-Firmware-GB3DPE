@@ -72,14 +72,18 @@ comparison and rate feel; absolute volume still needs the pellet test above.
 - Observation (dry, no polymer): auger turns **too slow and delivers too little**
   vs expectation. Consistent with steps/mm ~8x low vs slush0's same-extruder value.
 
-### Iter 1 — raise delivery + drop microstepping (PROPOSED / next)
+### Iter 1 — raise delivery + drop microstepping (APPLIED, pending test)
 - Change: `TMC2130_USTEPS_E` 4->1; E steps 4000->8000 (= 40 motor-rev/E-mm,
   ~8x delivery, matches slush0 same-hardware start); cap `DEFAULT_MAX_FEEDRATE[E]`
-  600->5 mm/s and `MANUAL_FEEDRATE[E]` 400->250 mm/min (AVR-safe at 8000 steps/mm).
+  and `_SILENT` 600->5 mm/s and `MANUAL_FEEDRATE[E]` 400->250 mm/min
+  (AVR-safe at 8000 steps/mm).
 - Rationale: fixes "too slow + not enough" (both = low delivery); µ1 keeps step
   rate ~40 k at the new steps/mm. Starting estimate only.
 - Expected max flow: ~5 mm/s E -> ~12 mm^3/s (DEDGE gives headroom above this).
-- Result: _pending flash + dry test_
+- Result: _pending flash + dry test_ (watch: auger rotation rate/amount now ~8x;
+  listen for missed-step beeps at MANUAL_FEEDRATE).
 - Next: once flowing pellets, run the volumetric calibration to nail steps/mm.
+- Note: if high-throughput flow (>~12 mm^3/s) is ever needed, the AVR step-rate
+  ceiling is the wall -> a 32-bit control board is the real fix, not more steps/mm.
 
 <!-- Add Iter 2, 3, ... below as we measure. Keep: Change / Rationale / Result / Next -->
