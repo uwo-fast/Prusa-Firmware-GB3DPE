@@ -469,8 +469,8 @@
 #define MESH_HOME_Z_CALIB 0.2
 #define MESH_HOME_Z_SEARCH 5.0f           // Z lift for homing, mesh bed leveling etc.
 
-#define X_PROBE_OFFSET_FROM_EXTRUDER -32     // Z probe to nozzle X offset: -left  +right  !!!CHANGED: 23 to -32 for GB3DPE
-#define Y_PROBE_OFFSET_FROM_EXTRUDER -39     // Z probe to nozzle Y offset: -front +behind !!!CHANGED: 5 to -39 for GB3DPE
+#define X_PROBE_OFFSET_FROM_EXTRUDER 20.4     // Z probe to nozzle X offset: -left  +right  !!!CHANGED: 23 to 20.4 for GB3DPE (PINDA remounted near stock pos)
+#define Y_PROBE_OFFSET_FROM_EXTRUDER 8.6     // Z probe to nozzle Y offset: -front +behind !!!CHANGED: 5 to 8.6 for GB3DPE (PINDA remounted near stock pos)
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 
