@@ -65,6 +65,35 @@ comparison and rate feel; absolute volume still needs the pellet test above.
 | `TMC2130_CURRENTS_R[E]` | E run current | 40 |
 | `EXTRUDE_MINTEMP` | cold-extrude lockout | 175 |
 
+## Priming / first layer (operational)
+
+Pellet extruders need priming before any cal/print:
+1. Fill hopper; confirm pellets actually feed (no bridging).
+2. Heat to temp and **soak** a few min — barrel thermal mass >> a filament
+   hotend; the whole barrel must reach temp to melt through.
+3. Manual-extrude until **steady, clean, consistent** flow (first prime from
+   empty takes patience). Wipe the purge blob (it drools — no melt retraction).
+4. Only then run first-layer / Live-Z. Gaps in the zigzag = not primed / temp
+   low: abort, prime more or +5-10 C, retry.
+
+## Slicer settings (PrusaSlicer)
+
+Starting point for the **0.4 mm** nozzle; refine as we calibrate.
+
+- **Nozzle diameter** = your actual size (Printer Settings). Layer height
+  0.15-0.20 for 0.4 mm. Bigger nozzle later -> layer ~0.5x nozzle, widen lines.
+- **Filament diameter: keep 1.75 mm — never change.** Our e-steps calibration is
+  built on the slicer computing E from 1.75 mm stock; changing it breaks it.
+- **Linear Advance OFF**: add `M900 K0` to filament Start G-code (auger != spring).
+- **Retraction**: start 0.5-1 mm or 0. Reversing the auger barely relieves
+  chamber pressure; expect some stringing - don't rabbit-hole early.
+- **Flow ceiling ~12 mm^3/s** (AVR at 8000 steps/mm). Max speed ~= 12 /
+  (line_width x layer_height). At 0.4/0.2 (~130 mm/s) not limiting, but run the
+  first prints slow (20-40 mm/s). Big nozzles: this is the real speed cap.
+- **Temp**: start ~215 C PLA (bump +5-10 if under-melted); bed ~60 C.
+- **Extrusion multiplier** ~1.0 after e-steps cal; trim from measured wall width.
+- First layer: ~0.20 mm and slow for adhesion.
+
 ## Iteration log
 
 ### Iter 0 — baseline (as-flashed)
