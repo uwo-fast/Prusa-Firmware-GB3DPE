@@ -94,14 +94,14 @@ absolute volume still needs the weigh test.
 
 ## Key config levers (Firmware/variants/MK3S.h and MK3.h)
 
-| Macro                                 | Purpose                  | Current    |
-| ------------------------------------- | ------------------------ | ---------- |
-| `DEFAULT_AXIS_STEPS_PER_UNIT[E]`      | E-mm -> steps (delivery) | 4000       |
-| `TMC2130_USTEPS_E`                    | E microstepping          | 4          |
-| `DEFAULT_MAX_FEEDRATE[E]` / `_SILENT` | E speed ceiling (M203)   | 600        |
-| `MANUAL_FEEDRATE[E]`                  | LCD/manual extrude speed | 400 mm/min |
-| `TMC2130_CURRENTS_R[E]`               | E run current            | 40         |
-| `EXTRUDE_MINTEMP`                     | cold-extrude lockout     | 175        |
+| Macro                                 | Purpose                  | Current      |
+| ------------------------------------- | ------------------------ | ------------ |
+| `DEFAULT_AXIS_STEPS_PER_UNIT[E]`      | E-mm -> steps (delivery) | 1187         |
+| `TMC2130_USTEPS_E`                    | E microstepping          | 32 (stock)   |
+| `DEFAULT_MAX_FEEDRATE[E]` / `_SILENT` | E speed ceiling (M203)   | 5 mm/s       |
+| `MANUAL_FEEDRATE[E]`                  | LCD/manual extrude speed | 250 mm/min   |
+| `TMC2130_CURRENTS_R[E]`               | E run current            | 40           |
+| `EXTRUDE_MINTEMP`                     | cold-extrude lockout     | 175          |
 
 ## Priming / first layer (operational)
 
@@ -209,4 +209,27 @@ fresh flashes, but remember: **on this printer, EEPROM is what's live.**
   `M900 K0` before the built-in first-layer cal (LA off for the auger). Once
   settled, update the `#define` to match.
 
-<!-- Add Iter 4, 5, ... below as we measure. Keep: Change / Rationale / Result / Next -->
+### Iter 4 — landed: 1187 steps/mm @ ustep32 (validated in service)
+
+- Volumetric cal (live via `M92`/`M500`, `M503`-confirmed): E50 @ 8000 steps/mm
+  weighed 1.005 g vs 0.149 g expected -> `s_new = 8000 x 0.149/1.005 ~= 1187`
+  steps/mm. Kept **stock ustep32** (the ustep1 detour was an artifact of the
+  EEPROM-masked stock ratio; at 1187 steps/mm the AVR step rate has ample
+  headroom, ~34 mm/s E ceiling). E max feedrate 5 mm/s.
+- Applied live and run for ~a week: prints well. `M503` shows
+  `M92 E1187`, `M350 E32`, `M203 E5`.
+- Baked into `#define`s (2026-07-30) so a fresh flash / factory reset reproduces
+  the working printer: `DEFAULT_AXIS_STEPS_PER_UNIT[E]` 8000->1187,
+  `TMC2130_USTEPS_E` 1->32 (revert to stock), feedrate already 5. **This is the
+  landing config.**
+
+### Iter 5 — PINDA mount finalized (probe offsets to CAD values)
+
+- Reprinted and installed the final **PINDA Back Right Mount**; its designed
+  offset from the nozzle is **X 2.3 / Y 0.86 mm**. Updated
+  `X/Y_PROBE_OFFSET_FROM_EXTRUDER` 20.4/8.6 -> 2.3/0.86 (compile-time, applies on
+  flash). Probe now sits much closer to the nozzle -> better mesh reachability
+  within the reduced X travel. XYZ workflow unchanged: D10 to mark skew OK, then
+  Calibrate Z -> Live-Z -> `G80`.
+
+<!-- Add Iter 6, 7, ... below as we measure. Keep: Change / Rationale / Result / Next -->
