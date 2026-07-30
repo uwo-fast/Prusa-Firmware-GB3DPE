@@ -41,7 +41,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,8000} // !!!CHANGED: GB3DPE auger E steps. DEFAULT ONLY - live value is EEPROM (M92); reflash won't change it w/o factory reset. ~8000 = slush0 same-hw start; calibrate w/ scale
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,1187} // !!!CHANGED: GB3DPE auger E steps. DEFAULT ONLY - live value is EEPROM (M92); reflash won't change it w/o factory reset. 1187 @ ustep32 = volumetric calibration (E50->1.005g), validated in service
 
 // Endstop inverting
 #define X_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
@@ -93,8 +93,8 @@
  */
 #define SHEET_PRINT_ZERO_REF_Y -2.f
 
-#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 5}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E for GB3DPE (AVR-safe at 8000 steps/mm; EEPROM-driven live via M203)
-#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 5}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E for GB3DPE (AVR-safe at 8000 steps/mm; EEPROM-driven live via M203)
+#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 5}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E for GB3DPE (AVR-safe at 1187 steps/mm; EEPROM-driven live via M203)
+#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 5}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E for GB3DPE (AVR-safe at 1187 steps/mm; EEPROM-driven live via M203)
 
 #define DEFAULT_MAX_ACCELERATION            {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 #define DEFAULT_MAX_ACCELERATION_SILENT     {960, 960, 200, 5000}    // (mm/sec^2) max acceleration (M201), silent mode
@@ -221,7 +221,7 @@
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    1        // microstep resolution for E axis ; !!!CHANGED: 32 to 1 for GB3DPE (iter1: ustep 4->1 for AVR step-rate headroom)
+#define TMC2130_USTEPS_E    32        // microstep resolution for E axis (stock; ustep1 experiment abandoned - 1187 steps/mm @ ustep32 has ample AVR headroom)
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
@@ -469,8 +469,8 @@
 #define MESH_HOME_Z_CALIB 0.2
 #define MESH_HOME_Z_SEARCH 5.0f           // Z lift for homing, mesh bed leveling etc.
 
-#define X_PROBE_OFFSET_FROM_EXTRUDER 20.4     // Z probe to nozzle X offset: -left  +right  !!!CHANGED: 23 to 20.4 for GB3DPE (PINDA remounted near stock pos)
-#define Y_PROBE_OFFSET_FROM_EXTRUDER 8.6     // Z probe to nozzle Y offset: -front +behind !!!CHANGED: 5 to 8.6 for GB3DPE (PINDA remounted near stock pos)
+#define X_PROBE_OFFSET_FROM_EXTRUDER 2.3     // Z probe to nozzle X offset: -left  +right  !!!CHANGED: for GB3DPE (PINDA Back Right Mount, CAD design offset)
+#define Y_PROBE_OFFSET_FROM_EXTRUDER 0.86     // Z probe to nozzle Y offset: -front +behind !!!CHANGED: for GB3DPE (PINDA Back Right Mount, CAD design offset)
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 
