@@ -4,7 +4,9 @@
 > `GB3DPE_`-prefixed so it won't collide on rebase/merge with upstream. This is
 > our living reasoning + experimental-iteration log for running the
 > **GreenBoy3D pellet extruder (GB3DPE)** on a **Prusa MK3S** (Einsy / atmega2560).
-> See `working.tmp/greenboy3d/CONTEXT.md` (untracked) for the hardware research.
+> Hardware research lives in
+> [`uwo-fast/gb3dpe-pellet-system`](https://github.com/uwo-fast/gb3dpe-pellet-system),
+> in `docs/greenboy3d-extruder.md`.
 
 ## Hardware facts that drive the config
 
@@ -101,7 +103,7 @@ absolute volume still needs the weigh test.
 | `DEFAULT_MAX_FEEDRATE[E]` / `_SILENT` | E speed ceiling (M203)   | 5 mm/s       |
 | `MANUAL_FEEDRATE[E]`                  | LCD/manual extrude speed | 250 mm/min   |
 | `TMC2130_CURRENTS_R[E]`               | E run current            | 40           |
-| `EXTRUDE_MINTEMP`                     | cold-extrude lockout     | 175          |
+| `EXTRUDE_MINTEMP`                     | cold-extrude lockout     | 175 (stock)  |
 
 ## Priming / first layer (operational)
 
@@ -126,9 +128,11 @@ Starting point for the **0.4 mm** nozzle; refine as we calibrate.
 - **Linear Advance OFF**: add `M900 K0` to filament Start G-code (auger != spring).
 - **Retraction**: start 0.5-1 mm or 0. Reversing the auger barely relieves
   chamber pressure; expect some stringing - don't rabbit-hole early.
-- **Flow ceiling ~12 mm^3/s** (AVR at 8000 steps/mm). Max speed ~= 12 /
-  (line_width x layer_height). At 0.4/0.2 (~130 mm/s) not limiting, but run the
-  first prints slow (20-40 mm/s). Big nozzles: this is the real speed cap.
+- **Flow ceiling ~81 mm^3/s** at the landed 1187 steps/mm (E capped at 5 mm/s by
+  `M203` gives ~12 mm^3/s in practice, which is the real limit today). Max speed
+  ~= flow / (line_width x layer_height). At 0.4/0.2 that is not limiting, but run
+  the first prints slow (20-40 mm/s). Big nozzles: raise `M203 E` before assuming
+  the AVR is the wall.
 - **Temp**: start ~215 C PLA (bump +5-10 if under-melted); bed ~60 C.
 - **Extrusion multiplier** ~1.0 after e-steps cal; trim from measured wall width.
 - First layer: ~0.20 mm and slow for adhesion.
@@ -141,7 +145,7 @@ Prusa stores motion settings in **EEPROM**, and **EEPROM wins over the
 value unless you factory-reset. Discovered 2026-07-22 via `M503`: after flashing
 iters 1-2, live E was still **stock 280 steps/mm, ustep 32, 120 mm/s** - none of
 our E changes had ever applied. (Compile-time items DID apply: probe offsets,
-travel limits, thermistor table, FANCHECK/FSENSOR/THERMAL_MODEL, `MANUAL_FEEDRATE`.)
+travel limits, thermistor table, `THERMAL_MODEL`, `MANUAL_FEEDRATE`.)
 
 **Tune E live instead of reflashing:**
 
@@ -157,6 +161,41 @@ Sweep `M92 E<n>` + `M500` to dial in - no reflash per step. If `M350` won't
 stick, factory-reset loads all the `#define`s at once (then re-send D10, redo
 Live-Z/mesh). Keep the `#define`s updated to the final numbers for reproducible
 fresh flashes, but remember: **on this printer, EEPROM is what's live.**
+
+## Runtime-gated features (fan check, filament sensor)
+
+`FANCHECK` and `FILAMENT_SENSOR` are **not** disabled in our variant headers,
+and should not be. Those `#define`s only compile the feature in; whether it
+actually runs is a separate **runtime setting in EEPROM**, set from the LCD:
+
+| Feature         | LCD menu                | EEPROM   | Read it            |
+| --------------- | ----------------------- | -------- | ------------------ |
+| Fan check       | Settings > Fan check    | `0x0F87` | `D3 Ax0f87 C1`     |
+| Filament sensor | Settings > Fil. sensor  | `0x0F67` | `D3 Ax0f67 C1`     |
+
+`00` means disabled. `Firmware/fancheck.cpp` reads `EEPROM_FAN_CHECK_ENABLED`
+into `fans_check_enabled` and gates the error on it; the filament sensor is
+toggled through `lcd_fsensor_enabled_set`.
+
+Both are off at runtime on our printer, which is why it prints without
+complaint: the GB3D blowers (swapped to 5 V units the Einsy can drive) have no
+tacho signal, and a pellet toolhead has no filament to sense. Turning the
+`#define`s off instead would remove the menu options along with the checks, and
+would leave nothing to re-enable if we ever fit tacho fans.
+
+**This is the same trap as the E-axis settings above.** Before concluding that
+a setting did or did not apply, check whether it is EEPROM-backed. A factory
+reset restores the `#define` defaults and will re-enable both of these.
+
+## Known gaps
+
+- **PID gains are still stock.** `DEFAULT_Kp/Ki/Kd` are Prusa's values for a
+  40 W E3D cartridge; the GB3DPE runs **70 W**. With `THERMAL_MODEL` disabled,
+  `TEMP_RUNAWAY` is the only remaining hotend protection. Run `M303 E0 S215 C8`,
+  then `M301` + `M500`.
+- **Probe offsets are CAD nominal, not measured.** X 2.3 / Y 0.86 mm come from
+  the mount CAD. The jog test that would confirm them - and rule out X
+  StallGuard homing shifting under the 700 g toolhead - has not been run.
 
 ## Iteration log
 
