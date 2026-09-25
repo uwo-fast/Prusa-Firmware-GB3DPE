@@ -4,7 +4,7 @@
 > `GB3DPE_`-prefixed so it won't collide on rebase/merge with upstream. This is
 > our living reasoning + experimental-iteration log for running the
 > **GreenBoy3D pellet extruder (GB3DPE)** on a **Prusa MK3S** (Einsy / atmega2560).
-> See `working.tmp/greenboy3d/CONTEXT.md` (untracked) for the hardware research.
+> The hardware, bring-up and open items are in [`GB3DPE.md`](GB3DPE.md).
 
 ## Hardware facts that drive the config
 
@@ -126,9 +126,9 @@ Starting point for the **0.4 mm** nozzle; refine as we calibrate.
 - **Linear Advance OFF**: add `M900 K0` to filament Start G-code (auger != spring).
 - **Retraction**: start 0.5-1 mm or 0. Reversing the auger barely relieves
   chamber pressure; expect some stringing - don't rabbit-hole early.
-- **Flow ceiling ~12 mm^3/s** (AVR at 8000 steps/mm). Max speed ~= 12 /
-  (line_width x layer_height). At 0.4/0.2 (~130 mm/s) not limiting, but run the
-  first prints slow (20-40 mm/s). Big nozzles: this is the real speed cap.
+- **Flow ceiling ~81 mm^3/s** (AVR step rate at the landed 1187 steps/mm; see
+  the calibration above). Not limiting at 0.4 mm; the melt rate of the auger is.
+  Run the first prints slow (20-40 mm/s).
 - **Temp**: start ~215 C PLA (bump +5-10 if under-melted); bed ~60 C.
 - **Extrusion multiplier** ~1.0 after e-steps cal; trim from measured wall width.
 - First layer: ~0.20 mm and slow for adhesion.
