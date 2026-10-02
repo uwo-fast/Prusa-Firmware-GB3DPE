@@ -1,10 +1,22 @@
 # Prusa Firmware MK3
 
-> This is a fork of Prusa-Firmware adapted to run the **GreenBoy3D pellet extruder (GB3DPE)** on our Prusa MK3S — GB3D ships no firmware or setup guide, so we derived the config ourselves. We are not affiliated with Prusa Research or GreenBoy3D.
+> This fork runs the GreenBoy3D pellet extruder (GB3DPE) on our Prusa MK3S.
+> GreenBoy3D ships no firmware or setup guide, so we worked out the
+> configuration ourselves.
 >
-> The stock GB3D PINDA bracket fits outside both the X and Y travel limits, so we designed a replacement that relocates the probe to roughly the original PINDA position. CAD is on [Onshape](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/w/08f77f413505764cd3b83244/e/b4788436987b1a21b68c4cc7?renderMode=0&uiState=6a6a3bbdac9cc86dfa5830a3) under `Pellet-Extruder-Fan-Duct > PINDA Back Right Mount`.
+> The changes are in `Firmware/variants/MK3S.h` and `MK3.h`: E steps/mm (1187 at
+> microstep 32, calibrated by weight), E feedrate and run current, probe offsets
+> for our replacement PINDA mount (X 2.3 / Y 0.86 mm), X travel, the printer
+> name, and the model-based thermal check turned off. Changed lines are marked
+> `!!!CHANGED`; comments explaining a stock value we deliberately kept are marked
+> `GB3DPE:`. It prints well for us, but we make no guarantees for your setup.
 >
-> Both `MK3.h` and `MK3S.h` are modified for the GB3DPE — probe offsets (X 2.3 / Y 0.86 mm, matching the current mount), E-axis steps/mm (1187 @ µ32, volumetrically calibrated), thermistor table, and travel limits. This setup has been tested and prints well for us, but we make no guarantees for yours — use at your own risk. All changes are tagged `!!!CHANGED:`; diff against upstream Prusa-Firmware to see them. [`GB3DPE.md`](GB3DPE.md) covers the hardware, bring-up and open items; [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md) is the full reasoning and calibration log. The bulk hopper that feeds it is [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper).
+> - [`GB3DPE.md`](GB3DPE.md): hardware, bring-up and open items
+> - [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md): reasoning and calibration log
+> - [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper):
+>   the bulk hopper that feeds it
+>
+> We are not affiliated with Prusa Research or GreenBoy3D.
 
 This repository contains the source code and the development versions of the firmware running on the [Original Prusa i3](https://prusa3d.com/) MK3S/MK3/MK2.5S/MK2.5 line of printers.
 

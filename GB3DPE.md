@@ -48,9 +48,10 @@ threads onto.
   `Pellet-Extruder-Fan-Duct > PINDA Back Right Mount`. Its designed offset is
   X 2.3 / Y 0.86 mm.
 
-**Supplied CAD, as measured.** The vendor files come with the kit under an
-unstated licence, so they are not redistributed; get them from the
-[vendor wiki](https://wiki.greenboy3d.de/).
+**Supplied CAD.** The vendor files come with the kit under an unstated licence,
+so they are not redistributed; get them from the
+[vendor wiki](https://wiki.greenboy3d.de/). Bounding boxes, measured in those
+files:
 
 | Part | Bounding box (mm) |
 | --- | --- |
@@ -99,9 +100,9 @@ Do these in order.
 7. **Prime, then print** (priming is in `GB3DPE_TUNING.md`). Retraction is set in
    the slicer. Send `M900 K0` before the first-layer calibration.
 
-**Remember:** EEPROM overrides the firmware's defaults on boot, so a reflash
-does not change live motion settings without a factory reset. Check with
-`M503`. See `GB3DPE_TUNING.md`.
+EEPROM overrides the firmware's defaults on boot, so a reflash does not change
+the live motion settings without a factory reset. Check them with `M503`; see
+`GB3DPE_TUNING.md`.
 
 **Safety.** `HEATER_0_MAXTEMP` is 305 °C and classic thermal-runaway protection
 is active. `THERMAL_MODEL` is off, because Prusa's model is fitted to a 40 W E3D.
