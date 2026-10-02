@@ -130,8 +130,6 @@ misplacement is X homing (StallGuard under load). If not, set
 - Run the probe-offset jog test above.
 - Run `M303 E0 S210 C8` and `M500`. The PID gains are still stock 40 W values,
   and with `THERMAL_MODEL` off, `TEMP_RUNAWAY` is the only hotend protection.
-- Reconcile `FANCHECK` and `FILAMENT_SENSOR`: they are disabled at runtime but
-  still enabled in the variant headers.
 - Re-fork cleanly: land these changes as one commit on a known upstream tag.
 - Caliper the toolhead's feed bore (18.30 mm from the STEP file).
 - The downstream end of the conveyor tube seats in the vendor hopper cap; a
