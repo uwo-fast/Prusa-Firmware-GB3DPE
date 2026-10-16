@@ -6,6 +6,9 @@
 > [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md). The bulk hopper that feeds it, with its
 > MK3S frame mount and hose outlet, is
 > [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper).
+> The mechanical conversion and wiring, step by step with photos, are in the
+> Appropedia guide
+> [Greenboy3D V1 Pellet Extruder Conversion for the Original Prusa i3 MK3S](https://www.appropedia.org/Greenboy3D_V1_Pellet_Extruder_Conversion_for_the_Original_Prusa_i3_MK3S).
 > We are not affiliated with GreenBoy3D or Prusa Research.
 
 **Status.** In service in the lab, printing from virgin pellets and shredded
@@ -40,8 +43,15 @@ The kit includes a 1 m pellet conveyor tube, which feedstock-hopper's outlet
 threads onto.
 
 **Deviations on our unit:**
-- **Fans:** the kit's two 24 V blowers were swapped for identical 5 V units,
-  because the Einsy cannot power them.
+- **Adapter mounting:** the Prusa-MK3S adapter bolts straight to the MK3S
+  extruder back plate with 3 × M3 × 25 mm socket head screws and M3 nuts,
+  trimmed so they clear the coupler and auger. A 6 mm shim between the motor
+  face and the adapter lines up the heat block, barrel and side screws.
+- **Fans:** the kit's two 24 V blowers were swapped for identical 5 V units
+  (WINSINN 40 × 20 mm), because the Einsy cannot power them.
+- **Wiring:** the heater, thermistor, both fans and the extruder motor were
+  rewired with new connectors and crimps; the PINDA keeps its stock connector.
+  The parts list is linked from the Appropedia guide.
 - **PINDA bracket:** GreenBoy3D's probe adapters put the probe outside the X and
   Y travel limits. Our replacement returns it near the stock position:
   [Onshape](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/w/08f77f413505764cd3b83244/e/b4788436987b1a21b68c4cc7),
@@ -132,6 +142,10 @@ misplacement is X homing (StallGuard under load). If not, set
 - Run `M303 E0 S210 C8` and `M500`. The PID gains are still stock 40 W values,
   and with `THERMAL_MODEL` off, `TEMP_RUNAWAY` is the only hotend protection.
 - Re-fork cleanly: land these changes as one commit on a known upstream tag.
+- Put our CAD (fan duct, PINDA mount, adapter and shim) in one public Onshape
+  document and link a released version from here and from the Appropedia guide.
+  Today the PINDA link above and the guide's PINDA link are different
+  documents, and the guide's adapter link is on Western's Onshape.
 - Caliper the toolhead's feed bore (18.30 mm from the STEP file).
 - The downstream end of the conveyor tube seats in the vendor hopper cap; a
   purpose-made adapter needs the current vendor CAD, which the wiki serves only

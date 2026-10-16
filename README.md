@@ -11,6 +11,8 @@
 > `!!!CHANGED`; comments explaining a stock value we deliberately kept are marked
 > `GB3DPE:`. It prints well for us, but we make no guarantees for your setup.
 >
+> - [Appropedia conversion guide](https://www.appropedia.org/Greenboy3D_V1_Pellet_Extruder_Conversion_for_the_Original_Prusa_i3_MK3S):
+>   mechanical conversion and wiring, with photos
 > - [`GB3DPE.md`](GB3DPE.md): hardware, bring-up and open items
 > - [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md): reasoning and calibration log
 > - [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper):
