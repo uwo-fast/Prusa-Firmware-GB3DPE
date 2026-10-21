@@ -342,9 +342,9 @@
 //#define  DEFAULT_Kp 40.925
 //#define  DEFAULT_Ki 4.875
 //#define  DEFAULT_Kd 86.085
-#define  DEFAULT_Kp 16.13
-#define  DEFAULT_Ki 1.1625
-#define  DEFAULT_Kd 56.23
+#define  DEFAULT_Kp 18.81 // !!!CHANGED: GB3DPE, M303 E0 S210 C8 autotune 2026-10-21 (stock 16.13)
+#define  DEFAULT_Ki 1.13 // !!!CHANGED: GB3DPE (stock 1.1625)
+#define  DEFAULT_Kd 78.11 // !!!CHANGED: GB3DPE (stock 56.23)
 #endif
 
 // Extrude mintemp
