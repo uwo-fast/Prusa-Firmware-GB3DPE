@@ -100,7 +100,7 @@ Do these in order.
    ```
 
    Keep a stock `MK3S_ENGLISH.hex` built from upstream `MK3` for rollback.
-2. **Flash** from PrusaSlicer. The boot screen must read "Prusa i3 MK3S GB3DPE".
+2. **Flash** from PrusaSlicer. The LCD status line must read "MK3S GB3DPE OK.".
 3. **Check the thermistor before heating.** Cold, it must read room
    temperature. Then compare against a thermometer at 180 °C and 240 °C. We run
    table 5, verified against a type-K thermocouple; table 11 over-read by

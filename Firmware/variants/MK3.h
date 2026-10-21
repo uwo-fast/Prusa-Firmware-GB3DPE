@@ -18,7 +18,7 @@
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3 GB3DPE" // !!!CHANGED: GB3DPE
+#define CUSTOM_MENDEL_NAME "MK3 GB3DPE" // !!!CHANGED: GB3DPE; 16 chars max, stored in a char[17] EEPROM slot
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
