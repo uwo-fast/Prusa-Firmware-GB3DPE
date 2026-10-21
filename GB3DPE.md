@@ -142,10 +142,9 @@ misplacement is X homing (StallGuard under load). If not, set
 - Run `M303 E0 S210 C8` and `M500`. The PID gains are still stock 40 W values,
   and with `THERMAL_MODEL` off, `TEMP_RUNAWAY` is the only hotend protection.
 - Re-fork cleanly: land these changes as one commit on a known upstream tag.
-- Put our CAD (fan duct, PINDA mount, adapter and shim) in one public Onshape
-  document and link a released version from here and from the Appropedia guide.
-  Today the PINDA link above and the guide's PINDA link are different
-  documents, and the guide's adapter link is on Western's Onshape.
+- Publish a version of the Onshape document and link it (`/v/`) from here and
+  from the Appropedia guide. Both link the live workspace (`/w/`) today, so the
+  CAD can change under the link while the probe offsets stay at X 2.3 / Y 0.86.
 - Caliper the toolhead's feed bore (18.30 mm from the STEP file).
 - The downstream end of the conveyor tube seats in the vendor hopper cap; a
   purpose-made adapter needs the current vendor CAD, which the wiki serves only
