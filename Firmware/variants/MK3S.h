@@ -17,7 +17,7 @@
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S GB3DPE"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK3S GB3DPE" // !!!CHANGED: GB3DPE
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
@@ -41,7 +41,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,1187} // !!!CHANGED: GB3DPE auger E steps. DEFAULT ONLY - live value is EEPROM (M92); reflash won't change it w/o factory reset. 1187 @ ustep32 = volumetric calibration (E50->1.005g), validated in service
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,1187} // !!!CHANGED: E 280 to 1187 for GB3DPE, calibrated by weight (GB3DPE_TUNING.md). Default only; the live value is in EEPROM (M92)
 
 // Endstop inverting
 #define X_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
@@ -93,8 +93,8 @@
  */
 #define SHEET_PRINT_ZERO_REF_Y -2.f
 
-#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 5}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E for GB3DPE (AVR-safe at 1187 steps/mm; EEPROM-driven live via M203)
-#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 5}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E for GB3DPE (AVR-safe at 1187 steps/mm; EEPROM-driven live via M203)
+#define DEFAULT_MAX_FEEDRATE                {200, 200, 12, 5}      // (mm/sec)   max feedrate (M203) ; !!!CHANGED: E 120 to 5 for GB3DPE. Default only; the live value is in EEPROM
+#define DEFAULT_MAX_FEEDRATE_SILENT         {100, 100, 12, 5}      // (mm/sec)   max feedrate (M203), silent mode ; !!!CHANGED: E 120 to 5 for GB3DPE. Default only; the live value is in EEPROM
 
 #define DEFAULT_MAX_ACCELERATION            {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 #define DEFAULT_MAX_ACCELERATION_SILENT     {960, 960, 200, 5000}    // (mm/sec^2) max acceleration (M201), silent mode
@@ -104,7 +104,7 @@
 #define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts (M204R)
 #define DEFAULT_TRAVEL_ACCELERATION   1250   // X, Y, Z and E max acceleration in mm/s^2 for travels (M204T)
 
-#define MANUAL_FEEDRATE {2700, 2700, 1000, 250}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E for GB3DPE (AVR-safe at 1187 steps/mm; compile-time, not EEPROM)
+#define MANUAL_FEEDRATE {2700, 2700, 1000, 250}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E 100 to 250 for GB3DPE (compile-time, not in EEPROM)
 
 //Silent mode limits
 #define SILENT_MAX_ACCEL_XY      960ul  // max acceleration in silent mode in mm/s^2
@@ -133,10 +133,10 @@
 #define UVLO_SUPPORT
 
 // Fan check
-// GB3DPE: kept on purpose. This only compiles the feature in; the check itself
-// is disabled at runtime via Settings > Fan check (EEPROM 0x0F87), because the
-// GB3D blowers (swapped to 5V units the Einsy can drive) have no tacho signal.
-// Undefining it here would remove the menu option along with the check.
+// GB3DPE: kept defined on purpose. This compiles the feature in; the check is
+// off at runtime (Settings > Fan check, EEPROM 0x0F87) because the 5 V blowers
+// on the GB3DPE have no tacho signal. Undefining it would also remove the menu
+// option.
 #define FANCHECK
 
 // Safety timer
@@ -153,9 +153,9 @@
 //#define MENU_SERIAL_DUMP        // Enable "Memory dump" in Settings menu
 
 // Filament sensor
-// GB3DPE: kept on purpose - compile-time capability only. A pellet toolhead has
-// no filament, so the sensor is disabled at runtime via Settings > Fil. sensor
-// (EEPROM 0x0F67).
+// GB3DPE: kept defined on purpose, as for FANCHECK. A pellet toolhead has no
+// filament, so the sensor is off at runtime (Settings > Fil. sensor, EEPROM
+// 0x0F67).
 #define FILAMENT_SENSOR
 #define FILAMENT_SENSOR_TYPE FSENSOR_IR_ANALOG
 #define FSENSOR_PROBING
@@ -228,7 +228,7 @@
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    32        // microstep resolution for E axis (stock; ustep1 experiment abandoned - 1187 steps/mm @ ustep32 has ample AVR headroom)
+#define TMC2130_USTEPS_E    32        // microstep resolution for E axis ; GB3DPE: stock value kept (GB3DPE_TUNING.md, Iter 4)
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
@@ -413,8 +413,8 @@
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 // model-based temperature check
-//#define THERMAL_MODEL 1              // enable model-based temperature checks ; !!!CHANGED: comment to disable thermal model for GB3DPE
-//#define THERMAL_MODEL_DEBUG 1        // extended runtime logging ; !!!CHANGED: comment to disable thermal model debug for GB3DPE
+//#define THERMAL_MODEL 1              // enable model-based temperature checks ; !!!CHANGED: disabled for GB3DPE (the model is fitted to a 40 W E3D hotend)
+//#define THERMAL_MODEL_DEBUG 1        // extended runtime logging ; !!!CHANGED: disabled with THERMAL_MODEL for GB3DPE
 
 #define THERMAL_MODEL_CAL_C_low 5    // C estimation lower limit
 #define THERMAL_MODEL_CAL_C_high 20  // C estimation upper limit
@@ -476,8 +476,8 @@
 #define MESH_HOME_Z_CALIB 0.2
 #define MESH_HOME_Z_SEARCH 5.0f           // Z lift for homing, mesh bed leveling etc.
 
-#define X_PROBE_OFFSET_FROM_EXTRUDER 2.3     // Z probe to nozzle X offset: -left  +right  !!!CHANGED: for GB3DPE (PINDA Back Right Mount, CAD design offset)
-#define Y_PROBE_OFFSET_FROM_EXTRUDER 0.86     // Z probe to nozzle Y offset: -front +behind !!!CHANGED: for GB3DPE (PINDA Back Right Mount, CAD design offset)
+#define X_PROBE_OFFSET_FROM_EXTRUDER 2.3     // Z probe to nozzle X offset: -left  +right ; !!!CHANGED: GB3DPE PINDA Back Right Mount, CAD offset
+#define Y_PROBE_OFFSET_FROM_EXTRUDER 0.86     // Z probe to nozzle Y offset: -front +behind ; !!!CHANGED: GB3DPE PINDA Back Right Mount, CAD offset
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 
@@ -614,7 +614,7 @@
 #elif defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define TEMP_SENSOR_0 148
 #else
-#define TEMP_SENSOR_0 5 // GB3DPE: verified vs K-type TC - stock sensor matches Semitec 104GT-2 curve (beta~4200); table 11 over-read by 11-28C
+#define TEMP_SENSOR_0 5 // GB3DPE: stock table kept. Checked against a type-K thermocouple, the sensor follows the Semitec 104GT-2 curve (beta about 4200); table 11 over-read by 11-28 C
 #endif
 #if defined(E3D_PT100_BED_WITH_AMP)
 #define TEMP_SENSOR_BED 247
