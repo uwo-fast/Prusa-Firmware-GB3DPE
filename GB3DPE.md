@@ -104,12 +104,18 @@ Do these in order.
 3. **Check the thermistor before heating.** Cold, it must read room
    temperature. Then compare against a thermometer at 180 °C and 240 °C. We run
    table 5, verified against a type-K thermocouple; table 11 over-read by
-   11–28 °C.
-4. **Turn off what a pellet head does not use**, from the LCD menu (they are
-   EEPROM settings, and the variant headers keep them compiled in so the menu
-   entries exist): crash detection (the heavy head false-trips StallGuard), fan
-   check (the 5 V blowers have no tacho), filament sensor. Read back with
-   `D3 Ax0f87 C1` and `D3 Ax0f67 C1`; `00` is off.
+   11–28 °C. Then tune the hotend PID: `M303 E0 S210 C8`, then `M301` with the
+   last Kp, Ki and Kd it prints, then `M500`. Ours came out at P18.81 I1.13
+   D78.11.
+4. **Turn off what a pellet head does not use**, in the LCD Settings menu (they
+   are EEPROM settings, and the variant headers keep them compiled in so the
+   menu entries exist): `Crash det.` (the heavy head false-trips StallGuard),
+   `Fans check` (the 5 V blowers have no tacho) and `Fil. sensor`, in its own
+   submenu. Check that each reads `[Off]`. With no sensor connected,
+   `Fil. sensor` can read `[On]` while runout shows `[N/A]`; turn it off anyway.
+   `D3 Ax0f87 C1` and `D3 Ax0f67 C1` read the same settings (`00` is off), but
+   only from a terminal that sends them lowercase: Pronterface uppercases
+   commands, and D3 then parses the address as data to write.
 5. **Check extrusion direction.** At temperature the auger must push melt out;
    if not, flip `INVERT_E0_DIR`.
 6. **Calibrate.** Do not run "Calibrate XYZ": the X travel is too short to reach
@@ -147,8 +153,6 @@ misplacement is X homing (StallGuard under load). If not, set
 ## Open, parked while the printer is in service
 
 - Run the probe-offset jog test above.
-- Run `M303 E0 S210 C8` and `M500`. The PID gains are still stock 40 W values,
-  and with `THERMAL_MODEL` off, `TEMP_RUNAWAY` is the only hotend protection.
 - Re-fork cleanly: land these changes as one commit on a known upstream tag.
 - Caliper the toolhead's feed bore (18.30 mm from the STEP file).
 - The downstream end of the conveyor tube seats in the vendor hopper cap; a
