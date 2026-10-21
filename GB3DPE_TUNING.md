@@ -184,15 +184,20 @@ in EEPROM, set from the LCD:
 
 | Feature         | LCD menu                | EEPROM   | Read it            |
 | --------------- | ----------------------- | -------- | ------------------ |
-| Fan check       | Settings > Fan check    | `0x0F87` | `D3 Ax0f87 C1`     |
+| Fan check       | Settings > Fans check   | `0x0F87` | `D3 Ax0f87 C1`     |
 | Filament sensor | Settings > Fil. sensor  | `0x0F67` | `D3 Ax0f67 C1`     |
 
-`00` means off. `Firmware/fancheck.cpp` reads `EEPROM_FAN_CHECK_ENABLED` into
-`fans_check_enabled` and gates the error on it; the filament sensor is toggled
-through `lcd_fsensor_enabled_set` in `Firmware/ultralcd.cpp`.
+The LCD shows the setting directly. With D3, `00` means off, but D3 needs the
+address in lowercase: Pronterface uppercases what it sends, and `D3 AX0F87`
+then parses as address 0 with data to write (it wrote nothing when we tried,
+because the uppercase data did not parse either). `Firmware/fancheck.cpp` reads
+`EEPROM_FAN_CHECK_ENABLED` into `fans_check_enabled` and gates the error on it;
+the filament sensor is toggled through `lcd_fsensor_enabled_set` in
+`Firmware/ultralcd.cpp`.
 
-Both are off on our printer. The 5 V blowers that replaced the kit's 24 V ones
-have no tacho signal, and a pellet toolhead has no filament to sense.
+Both are off on our printer, checked on the LCD on 2026-10-21 (see Iter 6). The
+5 V blowers that replaced the kit's 24 V ones have no tacho signal, and a pellet
+toolhead has no filament to sense.
 Undefining them would remove the menu options along with the checks, leaving no
 way to turn them back on if we ever fit tacho fans.
 
@@ -278,5 +283,24 @@ Each entry records what we knew at the time. Later entries correct earlier ones.
   Live-Z, `G80`.
 - The offset is the CAD value, not a measurement. The jog test in `GB3DPE.md`
   checks it.
+
+### Iter 6: settings check and hotend PID (2026-10-21)
+
+- `M503` matched the docs: `M92 … E1187.00`, `M350 … E32`, `M203 … E5.00` in
+  both normal and stealth modes.
+- LCD: `Crash det.` and `Fans check` were `[Off]`. `Fil. sensor` was `[On]`,
+  with runout and autoload `[N/A]` because no sensor is connected (the boot log
+  says `fsensor v0.4 in fault range 4.6-5V - unconnected`). Switched it off.
+- The live PID was `M301 P19.22 I1.80 D51.25`, not the firmware default
+  (16.13 / 1.1625 / 56.23), so an earlier autotune had been saved; when and at
+  what temperature is not recorded.
+- `M303 E0 S210 C8`: Ku 29.4–31.4, Tu 33.2–33.8 s over the cycles, the
+  temperature swinging about ±4.5 °C around 210 °C. Applied the last cycle,
+  `M301 P18.81 I1.13 D78.11`, and `M500`.
+- `M115` reported `MACHINE_TYPE:Prusa i3 MK3S GB3`. The printer name is copied
+  into a 17-byte EEPROM slot, and `"Prusa i3 MK3S GB3DPE"` is 21 bytes, so the
+  first-boot write overflowed into the next two settings and the stored copy
+  has no terminator. Harmless here, but the name needs to be 16 characters or
+  fewer. The stored copy only changes on a factory reset.
 
 <!-- New entries go below, as Change / Rationale / Result / Next. -->
