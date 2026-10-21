@@ -61,8 +61,9 @@ threads onto.
   Its designed offset is X 2.3 / Y 0.86 mm.
 
 Both of our parts are in the Onshape document
-[Pellet Extruder - FAST Modified](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/w/08f77f413505764cd3b83244/e/b4788436987b1a21b68c4cc7),
-alongside the vendor parts.
+[Pellet Extruder - FAST Modified, version v3](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/v/c9830c54e1eb7ccf4e0f1d72/e/b4788436987b1a21b68c4cc7),
+alongside the vendor parts. The link is to a released version, so the parts
+cannot change under it; newer work may be in the document's main workspace.
 
 **Supplied CAD.** The vendor files come with the kit, with no licence stated.
 They are imported into the Onshape document above for convenience; copyright
@@ -149,9 +150,6 @@ misplacement is X homing (StallGuard under load). If not, set
 - Run `M303 E0 S210 C8` and `M500`. The PID gains are still stock 40 W values,
   and with `THERMAL_MODEL` off, `TEMP_RUNAWAY` is the only hotend protection.
 - Re-fork cleanly: land these changes as one commit on a known upstream tag.
-- Publish a version of the Onshape document and link it (`/v/`) from here and
-  from the Appropedia guide. Both link the live workspace (`/w/`) today, so the
-  CAD can change under the link while the probe offsets stay at X 2.3 / Y 0.86.
 - Caliper the toolhead's feed bore (18.30 mm from the STEP file).
 - The downstream end of the conveyor tube seats in the vendor hopper cap; a
   purpose-made adapter needs the current vendor CAD, which the wiki serves only
