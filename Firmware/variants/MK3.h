@@ -102,7 +102,7 @@
 #define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts (M204R)
 #define DEFAULT_TRAVEL_ACCELERATION   1250   // X, Y, Z and E max acceleration in mm/s^2 for travels (M204T)
 
-#define MANUAL_FEEDRATE {2700, 2700, 1000, 250}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E for GB3DPE (AVR-safe at 8000 steps/mm; compile-time, not EEPROM)
+#define MANUAL_FEEDRATE {2700, 2700, 1000, 250}   // set the speeds for manual moves (mm/min) ; !!!CHANGED: E for GB3DPE (AVR-safe at 1187 steps/mm; compile-time, not EEPROM)
 
 //Silent mode limits
 #define SILENT_MAX_ACCEL_XY      960ul  // max acceleration in silent mode in mm/s^2
@@ -131,6 +131,10 @@
 #define UVLO_SUPPORT
 
 // Fan check
+// GB3DPE: kept on purpose. This only compiles the feature in; the check itself
+// is disabled at runtime via Settings > Fan check (EEPROM 0x0F87), because the
+// GB3D blowers (swapped to 5V units the Einsy can drive) have no tacho signal.
+// Undefining it here would remove the menu option along with the check.
 #define FANCHECK
 
 // Safety timer
@@ -147,6 +151,9 @@
 //#define MENU_SERIAL_DUMP        // Enable "Memory dump" in Settings menu
 
 // Filament sensor
+// GB3DPE: kept on purpose - compile-time capability only. A pellet toolhead has
+// no filament, so the sensor is disabled at runtime via Settings > Fil. sensor
+// (EEPROM 0x0F67).
 #define FILAMENT_SENSOR
 #define FILAMENT_SENSOR_TYPE FSENSOR_PAT9125
 #define FSENSOR_PROBING
