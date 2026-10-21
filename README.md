@@ -13,8 +13,8 @@
 >
 > - [Appropedia conversion guide](https://www.appropedia.org/Greenboy3D_V1_Pellet_Extruder_Conversion_for_the_Original_Prusa_i3_MK3S):
 >   mechanical conversion and wiring, with photos
-> - [`GB3DPE.md`](GB3DPE.md): hardware, bring-up and open items
-> - [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md): reasoning and calibration log
+> - [`GB3DPE.md`](GB3DPE.md): setup procedure for a converted printer
+> - [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md): firmware settings, calibration and history
 > - [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper):
 >   the bulk hopper that feeds it
 >

@@ -1,160 +1,271 @@
-# GB3DPE: the GreenBoy3D pellet extruder on a Prusa MK3S
+# GB3DPE: GreenBoy3D pellet extruder on a Prusa MK3S
 
-> **Fork addition, not part of upstream Prusa-Firmware.** Everything specific to
-> running the GreenBoy3D Pellet Extruder V1 on our MK3S: the hardware, bring-up,
-> and what is still open. The firmware's reasoning and calibration log is
-> [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md). The bulk hopper that feeds it, with its
-> MK3S frame mount and hose outlet, is
-> [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper).
-> The mechanical conversion and wiring, step by step with photos, are in the
-> Appropedia guide
-> [Greenboy3D V1 Pellet Extruder Conversion for the Original Prusa i3 MK3S](https://www.appropedia.org/Greenboy3D_V1_Pellet_Extruder_Conversion_for_the_Original_Prusa_i3_MK3S).
-> We are not affiliated with GreenBoy3D or Prusa Research.
+This fork of Prusa-Firmware runs the GreenBoy3D Pellet Extruder V1 on an
+Original Prusa i3 MK3S. This page is the procedure for setting up a converted
+printer. What the firmware changes, and why, is in
+[`GB3DPE_TUNING.md`](GB3DPE_TUNING.md).
 
-**Status.** In service in the lab, printing from virgin pellets and shredded
-regrind.
+- Mechanical conversion and wiring, with photos:
+  [Appropedia guide](https://www.appropedia.org/Greenboy3D_V1_Pellet_Extruder_Conversion_for_the_Original_Prusa_i3_MK3S)
+- CAD for our parts and the vendor parts:
+  [Pellet Extruder - FAST Modified, version v3](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/v/c9830c54e1eb7ccf4e0f1d72/e/b4788436987b1a21b68c4cc7)
+  (Onshape)
+- Bulk hopper: [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper).
+  The toolhead's own hopper holds 20–30 g, under an hour of printing.
 
-## Why this exists
+We are not affiliated with GreenBoy3D or Prusa Research. GreenBoy3D publishes no
+firmware or setup guide for this extruder; everything here was worked out on our
+printer.
 
-GreenBoy3D ships no firmware and effectively no documentation: the vendor wiki's
-Marlin, Klipper, printing and recycling pages are "Coming Soon" stubs, and the
-product page omits the gearbox ratio and any e-steps figure. Everything here is
-self-derived.
+## The extruder
 
-## Hardware
-
-A gravity-fed auger toolhead: a planetary-geared stepper turns a screw in a
-heated barrel and pushes melt out of an M6 nozzle. It replaces the stock hotend
-and extruder. From the
+A planetary-geared stepper turns a screw in a heated barrel, which melts pellets
+and pushes them out of an M6 nozzle. It replaces the MK3S hotend and extruder.
+From the
 [shop page](https://shop.greenboy3d.de/products/greenboy3d-pellet-extruder-v1):
 
-| Parameter | Value |
-| --- | --- |
-| Supply | 24 V; 70 W cartridge; one thermistor, type unstated; 2 fans |
-| Drive | planetary-geared stepper, ratio unpublished |
-| Max hotend | 330 °C stock, about 300 °C with PLA-printed parts |
-| Nozzle | M6, 0.4–2.5 mm |
-| Flow | 125–200 g/h at a 1 mm nozzle |
-| Pellets | 0.3–5 mm |
-| Retraction | mechanical (reversing screw) |
-| Mass | about 700 g |
+| Parameter  | Value                                                  |
+| ---------- | ------------------------------------------------------ |
+| Supply     | 24 V; 70 W heater cartridge; one thermistor; two fans  |
+| Drive      | planetary-geared stepper, ratio unpublished            |
+| Max hotend | 330 °C; about 300 °C with PLA-printed parts            |
+| Nozzle     | M6, 0.4–2.5 mm                                         |
+| Flow       | 125–200 g/h at a 1 mm nozzle                           |
+| Pellets    | 0.3–5 mm                                               |
+| Retraction | mechanical (the screw reverses)                        |
+| Mass       | about 700 g                                            |
 
-The kit includes a 1 m pellet conveyor tube, which feedstock-hopper's outlet
-threads onto.
+The vendor CAD and STL files are on the
+[GreenBoy3D wiki](https://wiki.greenboy3d.de/). The kit comes with no licence
+stated; copyright stays with GreenBoy3D.
 
-**Deviations on our unit:**
-- **Adapter mounting:** the Prusa-MK3S adapter bolts straight to the MK3S
-  extruder back plate with 3 × M3 × 25 mm socket head screws and M3 nuts,
-  trimmed so they clear the coupler and auger. A shim between the gearbox
-  faceplate and the adapter corrects the vertical offset between them:
-  `/Prusa MK3/ > Motor Faceplate Shim`, 1.5 mm by default, set by the `height`
-  variable in its part studio. The adapter itself is unmodified.
-- **Fans:** the kit's two 24 V blowers were swapped for identical 5 V units
-  (WINSINN 40 × 20 mm), because the Einsy cannot power them.
-- **Wiring:** the heater, thermistor, both fans and the extruder motor were
-  rewired with new connectors and crimps; the PINDA keeps its stock connector.
-  The parts list is linked from the Appropedia guide.
-- **PINDA bracket:** GreenBoy3D's probe adapters put the probe outside the X and
-  Y travel limits. Our replacement,
-  `Pellet-Extruder-Fan-Duct > MK3 PINDA Back Right Mount`, bolts to the existing
-  pair of holes on the fan duct and returns the probe near the stock position.
-  Its designed offset is X 2.3 / Y 0.86 mm.
+## What differs from a stock MK3S
 
-Both of our parts are in the Onshape document
-[Pellet Extruder - FAST Modified, version v3](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/v/c9830c54e1eb7ccf4e0f1d72/e/b4788436987b1a21b68c4cc7),
-alongside the vendor parts. The link is to a released version, so the parts
-cannot change under it; newer work may be in the document's main workspace.
+Hardware (the Appropedia guide has the steps):
 
-**Supplied CAD.** The vendor files come with the kit, with no licence stated.
-They are imported into the Onshape document above for convenience; copyright
-stays with GreenBoy3D, and the originals are on the
-[vendor wiki](https://wiki.greenboy3d.de/). Bounding boxes, measured in those
-files:
+- **Mounting:** the kit's Prusa-MK3S adapter bolts to the MK3S extruder back
+  plate with 3 × M3 × 25 mm socket head screws and M3 nuts, trimmed to clear the
+  coupler and auger. The `Motor Faceplate Shim` (1.5 mm) sits between the
+  gearbox faceplate and the adapter.
+- **Fans:** the kit's 24 V blowers are replaced with 5 V 40 × 20 mm blowers
+  (WINSINN), because the Einsy's fan outputs are 5 V.
+- **Wiring:** the heater, thermistor, both fans and the extruder motor are
+  re-terminated for the Einsy; the PINDA keeps its stock connector.
+- **PINDA:** the `MK3 PINDA Back Right Mount` bolts to the fan duct and puts the
+  probe at X 2.3 / Y 0.86 mm from the nozzle. The vendor's probe adapters put it
+  outside the printer's travel.
 
-| Part | Bounding box (mm) |
-| --- | --- |
-| Pellet-Extruder-Hopper | 43.11 × 40.18 × 45.50 |
-| Pellet-Extruder-Hopper-Cap | 43.22 × 54.30 × 6.99 |
-| Pellet-Extruder-Fan-Duct | 104.38 × 44.16 × 68.42 |
-| Prusa-MK3S+Adapter | 78.37 × 60.45 × 85.23 |
-| Proximity-Sensor-Adapter 8/12 | 31.00 × 24.00 × 35.00 |
-| Internal-Sliding-Pit | 37.40 × 19.77 × 11.47 |
-| External-Sliding-Pit | 46.59 × 50.75 × 12.50 |
+Firmware: E steps/mm 1187, E speed limit 5 mm/s, X travel 210 mm, the probe
+offset above, a tuned hotend PID, and Prusa's model-based thermal check turned
+off. The full list is in [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md).
 
-The stock hopper holds 20–30 g, under an hour at the quoted flow, which is why
-the bulk hopper exists. The toolhead's feed bore is Ø18.30 mm, taken from the
-STEP file rather than measured; it is the narrowest opening in the feed path.
+## What you need
 
-## Bring-up
+- A printer converted per the Appropedia guide.
+- A computer with PrusaSlicer, and Pronterface or another serial terminal
+  (115200 baud).
+- A thermometer or thermocouple that reads to at least 250 °C.
+- A scale that reads to 0.01 g.
+- Pellets, and the density of the material (PLA is about 1.24 g/cm³).
 
-Do these in order.
+## Setup
 
-1. **Build.** `python3 utils/bootstrap.py` once. On Debian its pip step fails
-   under PEP 668; supply `pyelftools`, `polib` and `regex` from a virtualenv and
-   pass `-DPython3_EXECUTABLE=...`. Then:
+Do the steps in order. Each one ends with what you should see.
 
-   ```bash
-   cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-         -DCMAKE_TOOLCHAIN_FILE=cmake/AvrGcc.cmake -DFW_VARIANTS="MK3;MK3S"
-   ninja -C build MK3S_ENGLISH     # build/build_gen/MK3S/MK3S_ENGLISH.hex
+### 1. Build the firmware
+
+On Linux, from the repository root:
+
+```bash
+python3 -m venv ~/.venvs/gb3dpe-fw
+~/.venvs/gb3dpe-fw/bin/python utils/bootstrap.py
+.dependencies/cmake-3.22.5/bin/cmake -S . -B build -G Ninja \
+    -DCMAKE_MAKE_PROGRAM=$PWD/.dependencies/ninja-1.12.1/ninja \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=cmake/AvrGcc.cmake \
+    -DFW_VARIANTS="MK3;MK3S" -DPython3_EXECUTABLE=$HOME/.venvs/gb3dpe-fw/bin/python
+.dependencies/ninja-1.12.1/ninja -C build MK3S_ENGLISH
+```
+
+`bootstrap.py` downloads the pinned toolchain into `.dependencies/` and installs
+its Python packages into the virtualenv.
+
+**Check:** `build/build_gen/MK3S/MK3S_ENGLISH.hex` exists. Keep a stock
+`MK3S_ENGLISH.hex`, built from upstream Prusa-Firmware, for rolling back.
+
+### 2. Flash
+
+In PrusaSlicer: Configuration > Flash printer firmware, then choose the `.hex`.
+
+**Check:** the LCD status line reads `MK3S GB3DPE OK.`
+
+### 3. Reset the EEPROM
+
+The printer keeps its settings in EEPROM, and on boot those override the
+firmware's defaults. A printer that has run stock firmware still holds stock
+values, such as 280 E steps/mm. Erasing the EEPROM loads our defaults.
+
+1. Hold the knob pressed while you switch the printer on.
+2. When the screen shows `Factory RESET` and the printer beeps, release it.
+3. Choose `All Data`.
+
+This also erases the calibration and the print statistics. After the reset the
+printer asks whether to guide you through setup. Answer No: its wizard runs
+Calibrate XYZ, which cannot work on this printer (step 10).
+
+**Check:** connect with Pronterface and send `M503`. These lines must match:
+
+```text
+M92 X100.00 Y100.00 Z400.00 E1187.00
+M350 X16 Y16 Z16 E32
+M203 X200.00 Y200.00 Z12.00 E5.00
+M301 P18.81 I1.13 D78.11
+```
+
+### 4. Turn off the checks a pellet head cannot pass
+
+In the LCD Settings menu, set each of these to `[Off]`. The EEPROM erase turns
+all three on.
+
+| LCD item      | Why it must be off                                      |
+| ------------- | ------------------------------------------------------- |
+| `Crash det.`  | The heavy toolhead trips the stall detection falsely.   |
+| `Fans check`  | The 5 V blowers have no speed signal.                   |
+| `Fil. sensor` | There is no filament. It is in its own submenu.         |
+
+With no sensor connected, `Fil. sensor` can show `[On]` while runout shows
+`[N/A]`. Turn it off anyway.
+
+**Check:** all three read `[Off]`.
+
+### 5. Check the thermistor
+
+1. Cold, the hotend must read room temperature.
+2. Heat to 180 °C, then 240 °C, and compare each with your thermometer at the
+   nozzle.
+
+**Check:** the readings agree to within about 10 °C. Ours was checked against a
+type-K thermocouple and fits the firmware's table to within about 6 °C. If yours
+is further off, stop: the sensor may not match the table (see
+[`GB3DPE_TUNING.md`](GB3DPE_TUNING.md)).
+
+### 6. Tune the hotend PID
+
+With the hotend empty or a dish under the nozzle (it may ooze):
+
+```gcode
+M303 E0 S210 C8
+```
+
+When it finishes it prints Kp, Ki and Kd for each cycle. Apply the last set and
+save:
+
+```gcode
+M301 P<Kp> I<Ki> D<Kd>
+M500
+```
+
+**Check:** `M503` shows your values on the `M301` line. Ours were P18.81 I1.13
+D78.11; yours should be close.
+
+### 7. Check the extrusion direction
+
+Fill the hopper, heat to 215 °C, and extrude a little from the LCD.
+
+**Check:** the auger pushes melt out of the nozzle. If it pulls back, set
+`INVERT_E0_DIR` to 1 in `Firmware/variants/MK3S.h` and rebuild.
+
+### 8. Prime
+
+1. Check that pellets feed from the hopper and do not bridge.
+2. Hold at 215 °C for a few minutes. The barrel holds far more heat than a
+   filament hotend, and all of it must be hot before melt flows through.
+3. Extrude from the LCD until the flow is steady and clean. The first prime from
+   empty takes several minutes. The nozzle drools between moves, because
+   reversing the screw relieves little pressure.
+
+**Check:** a steady, even strand.
+
+### 9. Check the E steps by weight
+
+One E-mm must deliver the volume of 1 mm of 1.75 mm filament, 2.405 mm³. Weigh
+what the printer delivers:
+
+1. Primed and at 215 °C, cut the strand flush at the nozzle.
+2. Send:
+
+   ```gcode
+   M83
+   G1 E200 F120
    ```
 
-   Keep a stock `MK3S_ENGLISH.hex` built from upstream `MK3` for rollback.
-2. **Flash** from PrusaSlicer. The LCD status line must read "MK3S GB3DPE OK.".
-3. **Check the thermistor before heating.** Cold, it must read room
-   temperature. Then compare against a thermometer at 180 °C and 240 °C. We run
-   table 5, verified against a type-K thermocouple; table 11 over-read by
-   11–28 °C. Then tune the hotend PID: `M303 E0 S210 C8`, then `M301` with the
-   last Kp, Ki and Kd it prints, then `M500`. Ours came out at P18.81 I1.13
-   D78.11.
-4. **Turn off what a pellet head does not use**, in the LCD Settings menu (they
-   are EEPROM settings, and the variant headers keep them compiled in so the
-   menu entries exist): `Crash det.` (the heavy head false-trips StallGuard),
-   `Fans check` (the 5 V blowers have no tacho) and `Fil. sensor`, in its own
-   submenu. Check that each reads `[Off]`. With no sensor connected,
-   `Fil. sensor` can read `[On]` while runout shows `[N/A]`; turn it off anyway.
-   `D3 Ax0f87 C1` and `D3 Ax0f67 C1` read the same settings (`00` is off), but
-   only from a terminal that sends them lowercase: Pronterface uppercases
-   commands, and D3 then parses the address as data to write.
-5. **Check extrusion direction.** At temperature the auger must push melt out;
-   if not, flip `INVERT_E0_DIR`.
-6. **Calibrate.** Do not run "Calibrate XYZ": the X travel is too short to reach
-   its circles. Send `D10` to mark XYZ as calibrated, then Calibrate Z, Live-Z,
-   `G80`. X travel is capped at 210.
-7. **Prime, then print** (priming is in `GB3DPE_TUNING.md`). Retraction is set in
-   the slicer. Send `M900 K0` before the first-layer calibration.
+3. When it stops, cut the strand at the nozzle and weigh it.
 
-EEPROM overrides the firmware's defaults on boot, so a reflash does not change
-the live motion settings without a factory reset. Check them with `M503`; see
-`GB3DPE_TUNING.md`.
+Expected mass = 200 × 2.405 mm³ × density. For PLA that is
+200 × 2.405 × 0.00124 = 0.60 g.
 
-**Safety.** `HEATER_0_MAXTEMP` is 305 °C and classic thermal-runaway protection
-is active. `THERMAL_MODEL` is off, because Prusa's model is fitted to a 40 W E3D.
-Do not print above about 300 °C: the toolhead's printed parts are the limit.
-70 W is about 2.9 A against the stock 1.7 A, so watch the heater FET on long
-soaks, and raise `TEMP_RUNAWAY_EXTRUDER_TIMEOUT` if the heavy block nuisance-trips
-the 45 s window.
+**Check:** the mass is within 5 % of expected. If not, set
+`new steps/mm = 1187 × expected / measured`, then send `M92 E<new>` and `M500`.
+Repeat until it is within 5 %.
 
-## Probe-offset jog test
+### 10. Calibrate the bed
 
-Settles whether the probe offset is right, or whether X homing shifts under the
-heavy head. It has not been run; the offsets are the mount's CAD nominal.
+1. Send `D10`. This marks the XYZ calibration as done. Do not run Calibrate XYZ:
+   with X travel at 210 mm the nozzle cannot reach its calibration points.
+2. Run Calibration > Calibrate Z.
+3. Send `M900 K0` (Linear Advance off), then run Calibration > First layer cal.
+   and set Live-Z.
 
-1. `G28`, raise Z, and jog the **nozzle** over a fine mark near the bed centre
-   (about X125 / Y105). `M114`: record N.
-2. Raise Z and jog the **PINDA** over the same mark. `M114`: record P.
-3. The true offset is N − P, in Prusa's convention (X −left +right, Y −front
-   +behind). It is independent of homing.
+**Check:** the first-layer pattern is a continuous line. Gaps mean the
+extruder is not primed or too cold: prime more or raise the temperature by
+5–10 °C and repeat.
 
-If it matches the configured X 2.3 / Y 0.86, the offset is right and any
-misplacement is X homing (StallGuard under load). If not, set
-`X/Y_PROBE_OFFSET_FROM_EXTRUDER` to the measured values.
+## Slicer settings (PrusaSlicer)
 
-## Open, parked while the printer is in service
+Start from the Original Prusa i3 MK3S profile and change:
 
-- Run the probe-offset jog test above.
-- Re-fork cleanly: land these changes as one commit on a known upstream tag.
-- Caliper the toolhead's feed bore (18.30 mm from the STEP file).
-- The downstream end of the conveyor tube seats in the vendor hopper cap; a
-  purpose-made adapter needs the current vendor CAD, which the wiki serves only
-  through its app.
+- **Nozzle diameter:** the nozzle actually fitted.
+- **Filament diameter:** leave it at 1.75 mm. The E steps assume it.
+- **Filament start G-code:** add `M900 K0`. Linear Advance models filament
+  compression, which an auger does not have.
+- **Retraction:** 0.5–1 mm, or none. Expect some stringing.
+- **Temperature:** about 215 °C for PLA; raise 5–10 °C if under-melted. Bed about
+  60 °C.
+- **Layer height:** 0.15–0.20 mm for a 0.4 mm nozzle; about half the nozzle
+  diameter for larger nozzles.
+- **Speed:** start at 20–40 mm/s. Flow is capped at about 12 mm³/s by the 5 mm/s
+  E speed limit, so the speed limit is about 12 / (line width × layer height)
+  mm/s.
+- **Extrusion multiplier:** about 1.0; trim it from measured wall width.
+
+## Safety
+
+- Do not print above about 300 °C. The toolhead's printed parts are the limit.
+  The firmware cuts out at 305 °C (`HEATER_0_MAXTEMP`).
+- Prusa's model-based thermal check is off, because its model is fitted to the
+  stock 40 W hotend. Classic thermal-runaway protection is on and is the only
+  hotend protection.
+- The 70 W heater draws about 2.9 A, against 1.7 A for the stock 40 W one. Watch
+  the heater connector on the Einsy during long heat-ups.
+- If the heavy heater block trips thermal runaway while heating normally, raise
+  `TEMP_RUNAWAY_EXTRUDER_TIMEOUT` (45 s) in `Firmware/variants/MK3S.h`.
+- Do not leave the printer heating unattended.
+
+## Checking the probe offset
+
+The offset X 2.3 / Y 0.86 mm is the mount's design value. To measure it:
+
+1. `G28`, raise Z, and jog the nozzle over a fine mark near the bed centre
+   (about X125 / Y105). Send `M114` and note X and Y.
+2. Raise Z and jog the PINDA over the same mark. Send `M114` again.
+3. Offset = nozzle position − PINDA position. Signs: X negative is left,
+   Y negative is front.
+
+If it differs from X 2.3 / Y 0.86, set `X_PROBE_OFFSET_FROM_EXTRUDER` and
+`Y_PROBE_OFFSET_FROM_EXTRUDER` in `Firmware/variants/MK3S.h` and rebuild.
+
+## Open items
+
+- Run the probe-offset check above on our printer.
+- Measure the toolhead's feed bore with calipers (18.30 mm in the STEP file).
+- Design an adapter for the conveyor tube where it enters the vendor hopper cap.
+- Re-base the fork as one commit on a tagged upstream release.

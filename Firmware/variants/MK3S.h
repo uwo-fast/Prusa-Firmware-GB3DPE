@@ -228,7 +228,7 @@
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    32        // microstep resolution for E axis ; GB3DPE: stock value kept (GB3DPE_TUNING.md, Iter 4)
+#define TMC2130_USTEPS_E    32        // microstep resolution for E axis ; GB3DPE: stock value kept (GB3DPE_TUNING.md)
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
