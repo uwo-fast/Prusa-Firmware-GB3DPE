@@ -6,6 +6,9 @@
 > [`GB3DPE_TUNING.md`](GB3DPE_TUNING.md). The bulk hopper that feeds it, with its
 > MK3S frame mount and hose outlet, is
 > [`uwo-fast/feedstock-hopper`](https://github.com/uwo-fast/feedstock-hopper).
+> The mechanical conversion and wiring, step by step with photos, are in the
+> Appropedia guide
+> [Greenboy3D V1 Pellet Extruder Conversion for the Original Prusa i3 MK3S](https://www.appropedia.org/Greenboy3D_V1_Pellet_Extruder_Conversion_for_the_Original_Prusa_i3_MK3S).
 > We are not affiliated with GreenBoy3D or Prusa Research.
 
 **Status.** In service in the lab, printing from virgin pellets and shredded
@@ -40,16 +43,31 @@ The kit includes a 1 m pellet conveyor tube, which feedstock-hopper's outlet
 threads onto.
 
 **Deviations on our unit:**
-- **Fans:** the kit's two 24 V blowers were swapped for identical 5 V units,
-  because the Einsy cannot power them.
+- **Adapter mounting:** the Prusa-MK3S adapter bolts straight to the MK3S
+  extruder back plate with 3 × M3 × 25 mm socket head screws and M3 nuts,
+  trimmed so they clear the coupler and auger. A shim between the gearbox
+  faceplate and the adapter corrects the vertical offset between them:
+  `/Prusa MK3/ > Motor Faceplate Shim`, 1.5 mm by default, set by the `height`
+  variable in its part studio. The adapter itself is unmodified.
+- **Fans:** the kit's two 24 V blowers were swapped for identical 5 V units
+  (WINSINN 40 × 20 mm), because the Einsy cannot power them.
+- **Wiring:** the heater, thermistor, both fans and the extruder motor were
+  rewired with new connectors and crimps; the PINDA keeps its stock connector.
+  The parts list is linked from the Appropedia guide.
 - **PINDA bracket:** GreenBoy3D's probe adapters put the probe outside the X and
-  Y travel limits. Our replacement returns it near the stock position:
-  [Onshape](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/w/08f77f413505764cd3b83244/e/b4788436987b1a21b68c4cc7),
-  `Pellet-Extruder-Fan-Duct > PINDA Back Right Mount`. Its designed offset is
-  X 2.3 / Y 0.86 mm.
+  Y travel limits. Our replacement,
+  `Pellet-Extruder-Fan-Duct > MK3 PINDA Back Right Mount`, bolts to the existing
+  pair of holes on the fan duct and returns the probe near the stock position.
+  Its designed offset is X 2.3 / Y 0.86 mm.
 
-**Supplied CAD.** The vendor files come with the kit under an unstated licence,
-so they are not redistributed; get them from the
+Both of our parts are in the Onshape document
+[Pellet Extruder - FAST Modified, version v3](https://cad.onshape.com/documents/08ae02778388e363fdd02b30/v/c9830c54e1eb7ccf4e0f1d72/e/b4788436987b1a21b68c4cc7),
+alongside the vendor parts. The link is to a released version, so the parts
+cannot change under it; newer work may be in the document's main workspace.
+
+**Supplied CAD.** The vendor files come with the kit, with no licence stated.
+They are imported into the Onshape document above for convenience; copyright
+stays with GreenBoy3D, and the originals are on the
 [vendor wiki](https://wiki.greenboy3d.de/). Bounding boxes, measured in those
 files:
 
@@ -135,4 +153,4 @@ misplacement is X homing (StallGuard under load). If not, set
 - Caliper the toolhead's feed bore (18.30 mm from the STEP file).
 - The downstream end of the conveyor tube seats in the vendor hopper cap; a
   purpose-made adapter needs the current vendor CAD, which the wiki serves only
-  through its app. Keep the vendor files on lab storage, not in a public repo.
+  through its app.
