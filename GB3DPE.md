@@ -239,13 +239,18 @@ Start from the Original Prusa i3 MK3S profile and change:
 
 ## Safety
 
-- Do not print above about 300 °C. The toolhead's printed parts are the limit.
-  The firmware cuts out at 305 °C (`HEATER_0_MAXTEMP`).
-- Prusa's model-based thermal check is off, because its model is fitted to the
-  stock 40 W hotend. Classic thermal-runaway protection is on and is the only
-  hotend protection.
-- The 70 W heater draws about 2.9 A, against 1.7 A for the stock 40 W one. Watch
-  the heater connector on the Einsy during long heat-ups.
+- The firmware stops the heater if the hotend reads above 305 °C
+  (`HEATER_0_MAXTEMP`) or below 10 °C (`HEATER_0_MINTEMP`), which also catches a
+  disconnected or shorted thermistor, and on thermal runaway. Prusa's
+  model-based thermal check is off, because its model is fitted to the stock
+  40 W hotend.
+- 305 °C is a fault cutoff, not a working limit. GreenBoy3D rates the extruder
+  to 330 °C, and to about 300 °C with PLA-printed parts; the material of the
+  printed parts sets the limit. We have printed at up to about 230 °C.
+- The 70 W heater draws about 2.9 A at 24 V, against 1.7 A for the stock 40 W
+  one. Prusa supports a 60 W hotend (2.5 A) on the same board
+  (`MK3S-E3DREVO_HF_60W.h`). The board, connector and wiring ratings at 70 W
+  have not been verified ([#8](https://github.com/uwo-fast/Prusa-Firmware-GB3DPE/issues/8)).
 - If the heavy heater block trips thermal runaway while heating normally, raise
   `TEMP_RUNAWAY_EXTRUDER_TIMEOUT` (45 s) in `Firmware/variants/MK3S.h`.
 - Do not leave the printer heating unattended.
@@ -264,6 +269,9 @@ If it differs from X 2.3 / Y 0.86, set `X_PROBE_OFFSET_FROM_EXTRUDER` and
 `Y_PROBE_OFFSET_FROM_EXTRUDER` in `Firmware/variants/MK3S.h` and rebuild.
 
 ## Open items
+
+Verification items for the hardware and the Appropedia guide are tracked in
+[#8](https://github.com/uwo-fast/Prusa-Firmware-GB3DPE/issues/8).
 
 - Run the probe-offset check above on our printer.
 - Measure the toolhead's feed bore with calipers (18.30 mm in the STEP file).
